@@ -2,8 +2,9 @@
   "name": "todo2",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/app1.js",
   "scripts": {
+    "start":"node src/app1.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
