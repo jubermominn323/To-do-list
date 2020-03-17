@@ -1,107 +1,196 @@
 <html>
     <head>
-        <meta name="viewport" content="width=device-width",initial-scale="1">
-        <link href="css/bootstrap.min.css" rel="stylesheet">
-        <script src="css/bootstrap.js"></script>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     </head>
     <style>
-        .todo-checked {
+        .todo-Checked {
             text-decoration: line-through;
-            
         }
     </style>
     <body>
-        <div class="container" style="padding:10px; width:1350px ; background-color: #1b262c;">
+        <div class="container-fluid" style="padding:10px;  background-color: #1b262c;">
             <center>
                 <h1 style="font-size: 60px;"><font color="lime">TODO</font> <font color="white">List</font></h1>
             </center>
         </div>
 
-        <div class="container-fluid" style="background-color: black; display: flex;justify-content: center; padding-top: 150px; padding-bottom: 50px; width: 1350px;">
-            <center>
-                <form class = "form-group input-group">
-                    <input type="text" name="item" id="todo-input" class="form-control input-lg" style="width: 500px;height: 50px; border-radius: 25px;" placeholder="Write something in todo list">
-                    
-                    <button type="submit" onclick="addTodo()" id="todo-add-btn" class="form-control btn-success btn-lg active"  style="width: 50px;height: 50px;border-radius: 25px;border: none;">
-                        <span class="glyphicon glyphicon-plus"></span>    
-                    </button>
-                </form>
-            </center>
-        </div>
+        
+            <div class="container-fluid" style="background-color: black; display: flex;justify-content: center; padding-top: 150px; padding-bottom: 50px; ">
+                <center>
+                    <form class = "form-group input-group">
+                        <input type="text" name="item" id="todo-input" class="form-control input-lg" style="width: 500px;height: 50px; border-radius: 25px;" placeholder="Write something in todo list">
+                        
+                        <button type="submit" onclick="addTodo()" id="todo-add-btn" class="form-control btn-success  btn-lg active"  style= "width: 50px;height: 50px;border-radius: 25px; margin-left: 10px; border: none;">
+                            <span class="glyphicon glyphicon-plus"></span>    
+                        </button>
+                    </form>
+                </center>
+            </div>
 
-        <div class="container-fluid" style="background-color: black; display: flex;justify-content: center; padding: 50px; width: 1350px;">
-            <ul id="todos">
-                <li></li>
-            </ul>
-        </div>
-    
+            <div class="container-fluid" style="background-color: black; display: flex;justify-content: center; padding: 50px;">
+                <table id="todos">
+                    <tr>
+                        <td></td>
+                        
+                    </tr>
+                </table>
+            </div>
+        </body>
 
         <script>
-            fetch("/api/todos/").then(function(resp) {
-                resp.text().then(function(data){
-                    var todos_data = JSON.parse(data);
-                    console.log(todos_data);
-                    var todosDiv = document.getElementById("todos");
-                    todosDiv.innerHTML = "";
-                    var list_items = todos_data.data;
-                    console.log(list_items);    
+            
+            fetch("/api/todos").then(function(resp) {
+                return  resp.json().then(function(data){
+                    
+               var todosDiv = document.getElementById("todos");
+                    
+                    var list_items = data; 
+
                     for(var i=0;i<list_items.length;i++) {
-                        var liElement = document.createElement("li");
-                        liElement.style.listStyle= "none";
+
+                        var trElem = document.createElement("tr");
+                        
+                        var delElem = document.createElement("button");
+                        delElem.style.marginLeft = "20px";
+                        delElem.style.color="red";
+                        delElem.style.backgroundColor="black";
+                        delElem.setAttribute("class","glyphicon glyphicon-trash btn");
+                        delElem.onclick = function(){
+                       
+                        var task= this.parentElement.parentElement.childNodes[1].childNodes[0].innerHTML;
+                        var a=this.parentElement.parentElement.childNodes[0].childNodes[0] //checkbox
+                        var b = this.parentElement.childNodes[0] //delete
+                        var c = this.parentElement.parentElement.childNodes[1].childNodes[0] //li 
+                        fetch(`/delete?del=${task}`).then(function(){
+                                a.style.display="none";
+                                b.style.display="none";
+                                c.style.display="none";
+                            })
+                            
+                        }
+                        
                         var checkboxElem = document.createElement("input");
                         checkboxElem.type = "checkbox";
                         checkboxElem.onclick = onChecked;
                         checkboxElem.style.height = "20px";
                         checkboxElem.style.width = "20px";
+                        checkboxElem.style.marginRight = "20px"
                         checkboxElem.checked = list_items[i].checked;
-                        if(list_items[i].checked) {
-                            liElement.classList.add("todo-checked");
-                        }
-                        liElement.appendChild(checkboxElem);
-                        var titleElem = document.createElement("span");
+                        
+                        var titleElem = document.createElement("li");
                         titleElem.style.fontSize = "30px";
                         titleElem.style.color = "white";
-                        titleElem.innerHTML = list_items[i].title;
-                        liElement.appendChild(titleElem);
-                        todosDiv.appendChild(liElement);
+                        titleElem.style.paddingRight="40px"
+                        titleElem.style.listStyleType = "none"
+                        titleElem.innerHTML = list_items[i].task;
+                        titleElem.id = list_items[i]._id;
+                        
+                        if(list_items[i].checked) {
+                            titleElem.classList.add("todo-Checked");
+                        }
+                        
+                        var tdElem1 = document.createElement("td");
+                        var tdElem2 = document.createElement("td");
+                        var tdElem3 = document.createElement("td");
+                        tdElem1.append(checkboxElem);
+                        tdElem2.append(titleElem);
+                        tdElem3.append(delElem);
+                        trElem.append(tdElem1);
+                        trElem.append(tdElem2);
+                        trElem.append(tdElem3);
+                        todosDiv.appendChild(trElem);
                     }
                 });
             });
             
             function onChecked() {
                 if(this.checked) {
-                    this.parentElement.classList.add("todo-checked");
+                    
                     console.log("Checked");
-                } else {
+                    var newVal = this.parentElement.parentElement.childNodes[1].childNodes[0].value;
+                    var id=this.parentElement.parentElement.childNodes[1].childNodes[0];
+                    console.log(this.parentElement.parentElement.childNodes[1].childNodes[0])
+                    console.log(this.parentElement.parentElement.childNodes[1].childNodes[0].value)
+                    fetch(`update/?updateVal=${newVal}&id=${id}`).then(function(){
+                        
+                    })
+                    this.parentElement.parentElement.childNodes[1].classList.add("todo-Checked"); 
+                }
+                else {
                     console.log("Not Checked");
-                    this.parentElement.classList.remove("todo-checked");
+                    this.parentElement.parentElement.childNodes[1].classList.remove("todo-Checked");
                 }
             }
             function addTodo() {
                 var todoName = document.getElementById("todo-input").value;
-                fetch("/api/todos/add?todoname="+todoName).then(function(res) {
+                fetch(`/api/todos/add?todoname=${todoName}`).then(function(res) {
+                    return res.text().then(function(data) {
+
+                        var list_items = data;
                         var todosDiv = document.getElementById("todos");
-                        var liElement = document.createElement("li");
-                        liElement.style.listStyle = 'none';
+                        var trElem = document.createElement("tr");
+                        var tdElem = document.createElement("td");
+
+                        
+                        var delElem = document.createElement("button");
+                        delElem.style.marginLeft = "20px";
+                        delElem.style.color="red";
+                        delElem.style.backgroundColor="black";
+                        delElem.setAttribute("class","glyphicon glyphicon-trash btn");
+                        
                         var checkboxElem = document.createElement("input");
                         checkboxElem.type = "checkbox";
                         checkboxElem.onclick = onChecked;
-                        checkboxElem.checked = false;
-                        if(checkboxElem.checked) {
-                            liElement.classList.add("todo-checked");
-                        }
-                        liElement.appendChild(checkboxElem);
-                        var titleElem = document.createElement("span");
+                        checkboxElem.style.height = "20px";
+                        checkboxElem.style.width = "20px";
+                        checkboxElem.style.marginRight = "20px"
+                        checkboxElem.checked = list_items[i].checked;
+
+                        //var ipEle = document.createElement("input")
+                        //ipEle.style.backgroundColor = "black"
+
+                        var titleElem = document.createElement("li");
                         titleElem.style.fontSize = "30px";
                         titleElem.style.color = "white";
+                        titleElem.style.paddingRight="40px"
                         titleElem.innerHTML = todoName;
-                        liElement.appendChild(titleElem);
-                        todosDiv.appendChild(liElement);
+
+                        if(checkboxElem.checked) {
+                            titleElem.classList.add("todo-checked");
+                            // fetch(`update/?id=${id}`).then(function(){
+                            //         //list_items[i].checked = true;
+                            //     })
+                        }
+                        
+                        var tdElem1 = document.createElement("td");
+                        var tdElem2 = document.createElement("td");
+                        var tdElem3 = document.createElement("td");
+                        tdElem1.append(checkboxElem);
+                        tdElem2.append(titleElem);
+                        tdElem3.append(delElem);
+                        trElem.append(tdElem1);
+                        trElem.append(tdElem2);
+                        trElem.append(tdElem3);
+                        todosDiv.appendChild(trElem);
+
+                        delElem.onclick = function(){
+                       
+                       var task= this.parentElement.parentElement.childNodes[1].childNodes[0].innerHTML;
+                       var a=this.parentElement.parentElement.childNodes[0].childNodes[0]
+                       var b = this.parentElement.childNodes[0]
+                       var c = this.parentElement.parentElement.childNodes[1].childNodes[0] 
+                       fetch(`/delete?del=${task}`).then(function(){
+                               a.style.display="none";
+                               b.style.display="none";
+                               c.style.display="none";
+                           })   
+                       }
+                    })
                 });
             }
         </script>
-    </body>
-
 </html>
