@@ -1,12 +1,15 @@
 const express = require('express');
 const app = express();
 const fs = require('fs');
+const port = process.env.PORT || 2020;
 
 const mongodb = require('mongodb');
 const MongoClient = mongodb.MongoClient
 const ObjectId = require('mongodb').ObjectID;
 const url = "mongodb://127.0.0.1:27017";
 const databaseName = "todo-db";
+
+app.use(express.static("public"))
 
 MongoClient.connect(url, {useUnifiedTopology:true}, function(err, client) {
     if(err){ console.log("There is some error")
@@ -79,6 +82,6 @@ app.get('/api/todos/add', function(req,res){
 })
 
 
-app.listen(process.env.PORT || 2020, function() {
-    console.log("Server Running")
+app.listen( port , () => {
+    console.log(`Server Listning at port ${port}`)
 });
