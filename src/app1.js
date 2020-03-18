@@ -20,9 +20,9 @@ MongoClient.connect(url, {useUnifiedTopology:true}, function(err, client) {
 
     
 app.get('/' , function(req , res) {
-    fs.readFile("src/html/index.html" , function(err, data) {
-        res.send(data.toString());
-    });
+    //fs.readFile("src/html/index.html" , function(err, data) {
+        res.sendFile(__dirname + '/html/index.html');
+    //});
 })
 
 app.get('/api/todos', function(req, res) {
