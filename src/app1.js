@@ -28,6 +28,7 @@ app.get('/' , function(req , res) {
 app.get('/api/todos', function(req, res) {
     db.collection("user").find({}).toArray(function(err, data) {
         res.send(data)
+    
     })
 })
 
@@ -35,22 +36,31 @@ db = client.db(databaseName)
 
 app.get('/update', function(req,res) {
     
-    //var hex = /[0-9A-Fa-f]{6}/g;
-    //var id = (hex.test(id))? ObjectId(id) : id;
-    var id = req.query.id;
-    var val = req.query.updateVal
-    console.log(val);
-    db.collection("user").updateOne({"task":"val"},{$set:{"checked":true}}, function(err, res) {
+    var val = req.query.trueVal
+    var che = req.query.ch;
+    
+    if(che == "true"){
+    db.collection("user").updateOne({"task":val},{$set:{"task":val,"checked":true}}, function(err, res) {
         if(err)
         console.log(err)
-        else("updated successfully")
+        
     })
+    }
+    else {
+        db.collection("user").updateOne({"task":val},{$set:{"task":val,"checked":false}}, function(err, res) {
+            if(err)
+            console.log(err)
+    
+        })  
+    }
+    
+    
 })
 
 
 app.get('/delete', function(req, res) {
     var delt = req.query.del
-  //  var id = req.query.id
+    
     db.collection("user").deleteOne({"task":delt}, function(err, res) {
         if(err)
         console.log(err)

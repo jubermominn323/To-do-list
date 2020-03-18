@@ -7,19 +7,21 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     </head>
     <style>
-        .todo-Checked {
+        .todo-Checked{
             text-decoration: line-through;
+            color: whitesmoke;
         }
     </style>
-    <body>
+    <body style="height: 500px;background-color: black;">
+        <nav class="nav navbar-dafault navbar-fixed-top">
         <div class="container-fluid" style="padding:10px;  background-color: #1b262c;">
             <center>
                 <h1 style="font-size: 60px;"><font color="lime">TODO</font> <font color="white">List</font></h1>
             </center>
         </div>
 
-        
-            <div class="container-fluid" style="background-color: black; display: flex;justify-content: center; padding-top: 150px; padding-bottom: 50px; ">
+        <div class = "container-fluid" style="background-color: black; padding-top: 50px; padding-bottom: 10px; ">
+            <div class="container-fluid" style="background-color: black; display: flex;justify-content: center; padding-top: 10px; padding-bottom: 10px; ">
                 <center>
                     <form class = "form-group input-group">
                         <input type="text" name="item" id="todo-input" class="form-control input-lg" style="width: 500px;height: 50px; border-radius: 25px;" placeholder="Write something in todo list">
@@ -30,8 +32,9 @@
                     </form>
                 </center>
             </div>
+            </nav>
 
-            <div class="container-fluid" style="background-color: black; display: flex;justify-content: center; padding: 50px;">
+            <div class="container-fluid" style="background-color: black; display: flex;justify-content: center; padding-top: 270px;padding-bottom: 50px;">
                 <table id="todos">
                     <tr>
                         <td></td>
@@ -39,6 +42,8 @@
                     </tr>
                 </table>
             </div>
+            </div>
+
         </body>
 
         <script>
@@ -89,13 +94,13 @@
                         titleElem.innerHTML = list_items[i].task;
                         titleElem.id = list_items[i]._id;
                         
-                        if(list_items[i].checked) {
-                            titleElem.classList.add("todo-Checked");
-                        }
-                        
                         var tdElem1 = document.createElement("td");
                         var tdElem2 = document.createElement("td");
                         var tdElem3 = document.createElement("td");
+                        if(list_items[i].checked) {
+                            
+                            tdElem2.classList.add("todo-Checked");
+                        }
                         tdElem1.append(checkboxElem);
                         tdElem2.append(titleElem);
                         tdElem3.append(delElem);
@@ -111,17 +116,21 @@
                 if(this.checked) {
                     
                     console.log("Checked");
-                    var newVal = this.parentElement.parentElement.childNodes[1].childNodes[0].value;
-                    var id=this.parentElement.parentElement.childNodes[1].childNodes[0];
-                    console.log(this.parentElement.parentElement.childNodes[1].childNodes[0])
-                    console.log(this.parentElement.parentElement.childNodes[1].childNodes[0].value)
-                    fetch(`update/?updateVal=${newVal}&id=${id}`).then(function(){
+                    var newVal = this.parentElement.parentElement.childNodes[1].childNodes[0].innerHTML;
+                    console.log(newVal);
+                    var id=this.parentElement.parentElement.childNodes[1].childNodes[0].id;
+                    fetch(`update/?trueVal=${newVal}&ch=${this.checked}`).then(function(){
                         
                     })
                     this.parentElement.parentElement.childNodes[1].classList.add("todo-Checked"); 
                 }
                 else {
                     console.log("Not Checked");
+                    var newVal = this.parentElement.parentElement.childNodes[1].childNodes[0].innerHTML;
+                    var id=this.parentElement.parentElement.childNodes[1].childNodes[0].id;
+                    fetch(`update/?trueVal=${newVal}&ch=${this.checked}`).then(function(){
+                        
+                    })
                     this.parentElement.parentElement.childNodes[1].classList.remove("todo-Checked");
                 }
             }
@@ -148,23 +157,13 @@
                         checkboxElem.style.height = "20px";
                         checkboxElem.style.width = "20px";
                         checkboxElem.style.marginRight = "20px"
-                        checkboxElem.checked = list_items[i].checked;
-
-                        //var ipEle = document.createElement("input")
-                        //ipEle.style.backgroundColor = "black"
 
                         var titleElem = document.createElement("li");
                         titleElem.style.fontSize = "30px";
                         titleElem.style.color = "white";
                         titleElem.style.paddingRight="40px"
+                        titleElem.style.listStyleType = "none"
                         titleElem.innerHTML = todoName;
-
-                        if(checkboxElem.checked) {
-                            titleElem.classList.add("todo-checked");
-                            // fetch(`update/?id=${id}`).then(function(){
-                            //         //list_items[i].checked = true;
-                            //     })
-                        }
                         
                         var tdElem1 = document.createElement("td");
                         var tdElem2 = document.createElement("td");
