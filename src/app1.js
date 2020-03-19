@@ -6,13 +6,13 @@ const port = process.env.PORT || 2020;
 const mongodb = require('mongodb');
 const MongoClient = mongodb.MongoClient
 const ObjectId = require('mongodb').ObjectID;
-const url = "mongodb://127.0.0.1:27017";
+const url = "mongodb+srv://schemer:schemer@cluster0-j4sph.mongodb.net/test?retryWrites=true&w=majority";
 const databaseName = "todo-db";
 
 app.use(express.static("public"))
 
 MongoClient.connect(url, {useUnifiedTopology:true}, function(err, client) {
-    if(err){ console.log("There is some error")
+    if(err){ console.log(err)
     return
     }
     else
