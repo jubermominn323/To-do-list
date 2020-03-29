@@ -12,16 +12,16 @@
             color: whitesmoke;
         }
     </style>
-    <body style="height: 500px;background-color: black;">
+    <body style="height: 500px;background-color: #a8e6cf;">
         <nav class="nav navbar-dafault navbar-fixed-top">
         <div class="container-fluid" style="padding:10px;  background-color: #1b262c;">
             <center>
-                <h1 style="font-size: 60px;"><font color="lime">TODO</font> <font color="white">List</font></h1>
+                <h1 style="font-size: 60px;"><font color="lime">To-do</font> <font color="white">List</font></h1>
             </center>
         </div>
 
-        <div class = "container-fluid" style="background-color: black; padding-top: 50px; padding-bottom: 10px; ">
-            <div class="container-fluid" style="background-color: black; display: flex;justify-content: center; padding-top: 10px; padding-bottom: 10px; ">
+        <div class = "container-fluid" style="background-color: #a8e6cf; padding-top: 50px; padding-bottom: 10px; ">
+            <div class="container-fluid" style="background-color: #a8e6cf; display: flex;justify-content: center; padding-top: 10px; padding-bottom: 10px; ">
                 <center>
                     <form class = "form-group input-group">
                         <input type="text" name="item" id="todo-input" class="form-control input-lg" style="width: 500px;height: 50px; border-radius: 25px;" placeholder="Write something in todo list">
@@ -34,7 +34,7 @@
             </div>
             </nav>
 
-            <div class="container-fluid" style="background-color: black; display: flex;justify-content: center; padding-top: 270px;padding-bottom: 50px;">
+            <div class="container-fluid" style="background-color: #a8e6cf; display: flex;justify-content: center; padding-top: 270px;padding-bottom: 50px;">
                 <table id="todos">
                     <tr>
                         <td></td>
@@ -62,22 +62,47 @@
                         var delElem = document.createElement("button");
                         delElem.style.marginLeft = "20px";
                         delElem.style.color="red";
-                        delElem.style.backgroundColor="black";
+                        delElem.style.backgroundColor="#a8e6cf";
                         delElem.setAttribute("class","glyphicon glyphicon-trash btn");
                         delElem.onclick = function(){
                        
-                        var task= this.parentElement.parentElement.childNodes[1].childNodes[0].innerHTML;
+                        var task= this.parentElement.parentElement.childNodes[1].childNodes[0].value;
                         var a=this.parentElement.parentElement.childNodes[0].childNodes[0] //checkbox
                         var b = this.parentElement.childNodes[0] //delete
-                        var c = this.parentElement.parentElement.childNodes[1].childNodes[0] //li 
+                        var c = this.parentElement.parentElement.childNodes[1].childNodes[0] //input 
+                        var d = this.parentElement.parentElement.childNodes[2] //edit
                         fetch(`/delete?del=${task}`).then(function(){
                                 a.style.display="none";
                                 b.style.display="none";
                                 c.style.display="none";
+                                d.style.display="none";
                             })
                             
                         }
-                        
+
+                        var editElem = document.createElement("button")
+                        editElem.style.color="green";
+                        editElem.style.backgroundColor="#a8e6cf";
+                        editElem.setAttribute("class", "glyphicon glyphicon-pencil btn");
+                        editElem.value = "EDIT"
+                        editElem.id = list_items[i]._id;
+                        editElem.onclick = function(){
+                            var id = this.id
+                            if(this.parentElement.parentElement.childNodes[2].childNodes[0].value == "EDIT") {
+                                this.parentElement.parentElement.childNodes[1].childNodes[0].value =""
+                                this.parentElement.parentElement.childNodes[2].childNodes[0].value = "SAVE"
+                                this.parentElement.parentElement.childNodes[2].childNodes[0].setAttribute("class", "glyphicon glyphicon-ok btn")
+                            }
+                            else{
+                                var newVal = this.parentElement.parentElement.childNodes[1].childNodes[0].value
+                                this.parentElement.parentElement.childNodes[2].childNodes[0].value = "EDIT"
+                                this.parentElement.parentElement.childNodes[2].childNodes[0].setAttribute("class", "glyphicon glyphicon-pencil btn")
+                                fetch(`update/?updateVal=${newVal}&id=${id}`).then(function(){
+                                    
+                                })
+                            }
+                        }
+
                         var checkboxElem = document.createElement("input");
                         checkboxElem.type = "checkbox";
                         checkboxElem.onclick = onChecked;
@@ -86,26 +111,33 @@
                         checkboxElem.style.marginRight = "20px"
                         checkboxElem.checked = list_items[i].checked;
                         
-                        var titleElem = document.createElement("li");
+                        var titleElem = document.createElement("input");
                         titleElem.style.fontSize = "30px";
-                        titleElem.style.color = "white";
+                        titleElem.style.color = "#424874";
                         titleElem.style.paddingRight="40px"
-                        titleElem.style.listStyleType = "none"
-                        titleElem.innerHTML = list_items[i].task;
+                        titleElem.style.backgroundColor = "#a8e6cf"
+                        titleElem.style.border = "none"
+                        titleElem.value = list_items[i].task;
                         titleElem.id = list_items[i]._id;
                         
                         var tdElem1 = document.createElement("td");
                         var tdElem2 = document.createElement("td");
                         var tdElem3 = document.createElement("td");
+                        var tdElem4 = document.createElement("td")
+
+
                         if(list_items[i].checked) {
                             
-                            tdElem2.classList.add("todo-Checked");
+                            titleElem.classList.add("todo-Checked");
+                            
                         }
                         tdElem1.append(checkboxElem);
                         tdElem2.append(titleElem);
+                        tdElem4.append(editElem);
                         tdElem3.append(delElem);
                         trElem.append(tdElem1);
                         trElem.append(tdElem2);
+                        trElem.append(tdElem4);
                         trElem.append(tdElem3);
                         todosDiv.appendChild(trElem);
                     }
@@ -116,22 +148,21 @@
                 if(this.checked) {
                     
                     console.log("Checked");
-                    var newVal = this.parentElement.parentElement.childNodes[1].childNodes[0].innerHTML;
-                    console.log(newVal);
+                    var newVal = this.parentElement.parentElement.childNodes[1].childNodes[0].value;
                     var id=this.parentElement.parentElement.childNodes[1].childNodes[0].id;
                     fetch(`update/?trueVal=${newVal}&ch=${this.checked}`).then(function(){
                         
                     })
-                    this.parentElement.parentElement.childNodes[1].classList.add("todo-Checked"); 
+                    this.parentElement.parentElement.childNodes[1].childNodes[0].classList.add("todo-Checked"); 
                 }
                 else {
                     console.log("Not Checked");
-                    var newVal = this.parentElement.parentElement.childNodes[1].childNodes[0].innerHTML;
+                    var newVal = this.parentElement.parentElement.childNodes[1].childNodes[0].value;
                     var id=this.parentElement.parentElement.childNodes[1].childNodes[0].id;
                     fetch(`update/?trueVal=${newVal}&ch=${this.checked}`).then(function(){
                         
                     })
-                    this.parentElement.parentElement.childNodes[1].classList.remove("todo-Checked");
+                    this.parentElement.parentElement.childNodes[1].childNodes[0].classList.remove("todo-Checked");
                 }
             }
             function addTodo() {
@@ -148,7 +179,7 @@
                         var delElem = document.createElement("button");
                         delElem.style.marginLeft = "20px";
                         delElem.style.color="red";
-                        delElem.style.backgroundColor="black";
+                        delElem.style.backgroundColor="#a8e6cf";
                         delElem.setAttribute("class","glyphicon glyphicon-trash btn");
                         
                         var checkboxElem = document.createElement("input");
@@ -158,35 +189,69 @@
                         checkboxElem.style.width = "20px";
                         checkboxElem.style.marginRight = "20px"
 
-                        var titleElem = document.createElement("li");
+                        var titleElem = document.createElement("input");
                         titleElem.style.fontSize = "30px";
-                        titleElem.style.color = "white";
+                        titleElem.style.color = "#424874";
                         titleElem.style.paddingRight="40px"
-                        titleElem.style.listStyleType = "none"
-                        titleElem.innerHTML = todoName;
+                        titleElem.style.backgroundColor = "#a8e6cf"
+                        titleElem.style.border = "none"
+                        titleElem.value = list_items[i].task;
+                        titleElem.id = list_items[i]._id;
+
+
+                        var editElem = document.createElement("button")
+                        editElem.style.color="green";
+                        editElem.style.backgroundColor="#a8e6cf";
+                        editElem.setAttribute("class", "glyphicon glyphicon-pencil btn");
+                        editElem.value = "EDIT"
+                        editElem.id = list_items[i]._id;
+                        editElem.onclick = function(){
+                            var id = this.id
+                            console.log(this.parentElement.parentElement.childNodes[2].childNodes[0])
+                            if(this.parentElement.parentElement.childNodes[2].childNodes[0].value == "EDIT") {
+                                this.parentElement.parentElement.childNodes[1].childNodes[0].value =""
+                                this.parentElement.parentElement.childNodes[2].childNodes[0].value = "SAVE"
+                                this.parentElement.parentElement.childNodes[2].childNodes[0].setAttribute("class", "glyphicon glyphicon-ok btn")
+                            }
+                            else{
+                                var newVal = this.parentElement.parentElement.childNodes[1].childNodes[0].value
+                                console.log(this.parentElement.parentElement.childNodes[1].childNodes[0])
+                                this.parentElement.parentElement.childNodes[2].childNodes[0].value = "EDIT"
+                                this.parentElement.parentElement.childNodes[2].childNodes[0].setAttribute("class", "glyphicon glyphicon-pencil btn")
+                                fetch(`update/?updateVal=${newVal}&id=${id}`).then(function(){
+                                    
+                                })
+                            }
+                        }
                         
                         var tdElem1 = document.createElement("td");
                         var tdElem2 = document.createElement("td");
                         var tdElem3 = document.createElement("td");
+                        var tdElem4 = document.createElement("td");
                         tdElem1.append(checkboxElem);
                         tdElem2.append(titleElem);
+                        tdElem4.append(editElem);
                         tdElem3.append(delElem);
                         trElem.append(tdElem1);
                         trElem.append(tdElem2);
+                        trElem.append(tdElem4);
                         trElem.append(tdElem3);
                         todosDiv.appendChild(trElem);
 
                         delElem.onclick = function(){
                        
-                       var task= this.parentElement.parentElement.childNodes[1].childNodes[0].innerHTML;
-                       var a=this.parentElement.parentElement.childNodes[0].childNodes[0]
-                       var b = this.parentElement.childNodes[0]
-                       var c = this.parentElement.parentElement.childNodes[1].childNodes[0] 
+                       var task= this.parentElement.parentElement.childNodes[1].childNodes[0].value;
+                       var a=this.parentElement.parentElement.childNodes[0].childNodes[0] //checkbox
+                       var b = this.parentElement.childNodes[0] //delete
+                       var c = this.parentElement.parentElement.childNodes[1].childNodes[0] //input 
+                       var d = this.parentElement.parentElement.childNodes[2] //edit
                        fetch(`/delete?del=${task}`).then(function(){
                                a.style.display="none";
                                b.style.display="none";
                                c.style.display="none";
-                           })   
+                               d.style.display="none";
+                           })
+                           
                        }
                     })
                 });

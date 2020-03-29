@@ -5,7 +5,7 @@ const port = process.env.PORT || 2020;
 
 const mongodb = require('mongodb');
 const MongoClient = mongodb.MongoClient
-const ObjectId = require('mongodb').ObjectID;
+const ObjectID = require('mongodb').ObjectID;
 const url = "mongodb+srv://schemer:schemer@cluster0-j4sph.mongodb.net/test?retryWrites=true&w=majority";
 const databaseName = "todo-db";
 
@@ -35,10 +35,17 @@ app.get('/api/todos', function(req, res) {
 db = client.db(databaseName)
 
 app.get('/update', function(req,res) {
-    
+    var upVal = req.query.updateVal
+    var id = req.query.id
     var val = req.query.trueVal
     var che = req.query.ch;
     
+    if(upVal){
+    db.collection("user").updateOne({"_id":ObjectID(id)},{$set:{"task":upVal}}, function(err, res){
+        if(err) console.log(err)
+    })
+    }
+
     if(che == "true"){
     db.collection("user").updateOne({"task":val},{$set:{"task":val,"checked":true}}, function(err, res) {
         if(err)
